@@ -8,6 +8,13 @@
     <artifactId>Java-JDBC</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <repositories>
+        <repository>
+            <id>postgresql</id>
+            <url>https://jdbc.postgresql.org/download</url>
+        </repository>
+    </repositories>
+
     <properties>
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -17,9 +24,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
+            <version>42.7.2</version>
         </dependency>
     </dependencies>
 </project>
