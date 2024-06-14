@@ -1,7 +1,6 @@
 package com.satish.lil.jdbc;
 
 import com.satish.lil.jdbc.util.DataAccessObject;
-import com.satish.lil.jdbc.util.DataTransferObject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,7 +22,6 @@ public class CustomerDAO extends DataAccessObject<Customer> {
 
     @Override
     public Customer findById(long id) {
-        System.out.println("findByID(" + id + ")");
         Customer customer = new Customer();
         try(PreparedStatement statement = this.connection.prepareStatement(GET_ONE)) {
             statement.setLong(1, id);
@@ -48,12 +46,12 @@ public class CustomerDAO extends DataAccessObject<Customer> {
 
     @Override
     public List<Customer> findAll() {
-        System.out.println("findAll()");
         List<Customer> customers = new ArrayList<>();
-        Customer customer = new Customer();
+        Customer customer = null;
         try(PreparedStatement statement = this.connection.prepareStatement(GET_ALL)) {
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
+                customer = new Customer();
                 customer.setId(resultSet.getLong("customer_id"));
                 customer.setFirstName(resultSet.getString("first_name"));
                 customer.setLastName(resultSet.getString("last_name"));
@@ -74,7 +72,6 @@ public class CustomerDAO extends DataAccessObject<Customer> {
 
     @Override
     public Customer update(Customer dto) {
-        System.out.println("update(" + dto.getId() + ")");
         Customer customer;
         try(PreparedStatement statement = this.connection.prepareStatement(UPDATE)) {
             statement.setString(1,dto.getFirstName());
@@ -97,7 +94,6 @@ public class CustomerDAO extends DataAccessObject<Customer> {
 
     @Override
     public Customer create(Customer dto) {
-        System.out.println("create("+dto.getFirstName()+")");
         try(PreparedStatement statement = this.connection.prepareStatement(INSERT)) {
             statement.setString(1,dto.getFirstName());
             statement.setString(2,dto.getLastName());
@@ -118,7 +114,6 @@ public class CustomerDAO extends DataAccessObject<Customer> {
 
     @Override
     public void delete(long id) {
-        System.out.println("delete(" + id + ")");
         try(PreparedStatement statement = this.connection.prepareStatement(DELETE)) {
             statement.setLong(1,id);
             statement.execute();

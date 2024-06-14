@@ -51,10 +51,11 @@ public class JDBCExecutor {
 
             List<Customer> customers = customerDAO.findAll();
             System.out.println("List size = " + customers.size());
-
+            OrderDAO orderDAO = new OrderDAO(connection);
+            Order order = orderDAO.findById(1068);
+            System.out.println(order);
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         }
-        System.out.printf("Hello Learning JDBC!");
     }
 }
