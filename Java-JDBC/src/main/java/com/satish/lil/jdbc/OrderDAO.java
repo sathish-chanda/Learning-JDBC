@@ -4,14 +4,22 @@ import com.satish.lil.jdbc.util.DataAccessObject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.sql.ResultSet;
+
 
 public class OrderDAO extends DataAccessObject<Order> {
-    private final String COMPLEX_QUERY = "SELECT o.order_id, o.creation_date, o.total_due, o.status, c.customer_id, c.first_name, c.last_name, c.email, c.phone,c.address, c.city, c.state, c.zipcode, s.salesperson_id, s.first_name, s.last_name, s.email, s.phone, s.address, s.city, s.state, s.zipcode, oi.order_item_id, oi.order_id, oi.quantity, p.product_id, p.code, p.name, p.size, p.variety, p.price, p.status FROM orders o JOIN customer c ON o.customer_id = c.customer_id JOIN salesperson s ON s.salesperson_id = o.salesperson_id JOIN order_item oi ON oi.order_id = o.order_id JOIN product p ON p.product_id = oi.product_id WHERE o.order_id = ?";
+
+    private final static String GET_BY_ID = "SELECT c.first_name, c.last_name, c.email, o.order_id, o.creation_date, " +
+            "o.total_due, o.status, s.first_name, s.last_name, s.email, ol.quantity, p.code, p.name, p.size, " +
+            "p.variety, p.price FROM orders o JOIN customer c on o.customer_id = c.customer_id JOIN salesperson s " +
+            "on o.salesperson_id = s.salesperson_id JOIN order_item ol on ol.order_id = o.order_id JOIN product p " +
+            "on ol.product_id = p.product_id where o.order_id = ?";
+
+    private static final String GET_FOR_CUST = "SELECT * FROM get_orders_by_customer(?)";
 
     public OrderDAO(Connection connection) {
         super(connection);
@@ -19,73 +27,38 @@ public class OrderDAO extends DataAccessObject<Order> {
 
     @Override
     public Order findById(long id) {
-        Order order = null;
-        try(PreparedStatement statement = this.connection.prepareStatement(COMPLEX_QUERY)) {
-            statement.setLong(1,id);
+        Order order = new Order();
+        try(PreparedStatement statement = this.connection.prepareStatement(GET_BY_ID);){
+            statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
-            CustomerInfo customerInfo = null;
-            SalepersonInfo salepersonInfo = null;
-            List<OrderItem> orderItems = new ArrayList<>();
-            while(resultSet.next()) {
-                int index = 1;
-                if(order == null) {
-                    order = new Order();
-                    order.setOrderId(resultSet.getLong(index++));
-                    order.setCreationDate(new Date(resultSet.getDate(index++).getTime()));
-                    order.setTotalDue(resultSet.getBigDecimal(index++));
-                    order.setStatus(resultSet.getString(index++));
-                } else {
-                    index = 5;
+            long orderId = 0;
+            List<OrderLine> orderLines = new ArrayList<>();
+            while(resultSet.next()){
+                if(orderId==0){
+                    order.setCustomerFirstName(resultSet.getString(1));
+                    order.setCustomerLastName(resultSet.getString(2));
+                    order.setCustomerEmail(resultSet.getString(3));
+                    order.setId(resultSet.getLong(4));
+                    orderId = order.getId();
+                    order.setCreationDate(new Date(resultSet.getDate(5).getTime()));
+                    order.setTotalDue(resultSet.getBigDecimal(6));
+                    order.setStatus(resultSet.getString(7));
+                    order.setSalespersonFirstName(resultSet.getString(8));
+                    order.setSalespersonLastName(resultSet.getString(9));
+                    order.setSalespersonEmail(resultSet.getString(10));
+
                 }
-                if(customerInfo == null) {
-                    customerInfo = new CustomerInfo();
-                    customerInfo.setCustomerId(resultSet.getLong(index++));
-                    customerInfo.setFirstName(resultSet.getString(index++));
-                    customerInfo.setLastName(resultSet.getString(index++));
-                    customerInfo.setEmail(resultSet.getString(index++));
-                    customerInfo.setPhone(resultSet.getString(index++));
-                    customerInfo.setAddress(resultSet.getString(index++));
-                    customerInfo.setCity(resultSet.getString(index++));
-                    customerInfo.setState(resultSet.getString(index++));
-                    customerInfo.setZipcode(resultSet.getString(index++));
-                } else {
-                    index = 14;
-                }
-                if(salepersonInfo == null) {
-                    salepersonInfo = new SalepersonInfo();
-                    salepersonInfo.setSalespersonId(resultSet.getLong(index++));
-                    salepersonInfo.setFirstName(resultSet.getString(index++));
-                    salepersonInfo.setLastName(resultSet.getString(index++));
-                    salepersonInfo.setEmail(resultSet.getString(index++));
-                    salepersonInfo.setPhone(resultSet.getString(index++));
-                    salepersonInfo.setAddress(resultSet.getString(index++));
-                    salepersonInfo.setCity(resultSet.getString(index++));
-                    salepersonInfo.setState(resultSet.getString(index++));
-                    salepersonInfo.setZipcode(resultSet.getString(index++));
-                } else {
-                    index = 23;
-                }
-                OrderItem orderItem = new OrderItem();
-                orderItem.setOrderItemId(resultSet.getLong(index++));
-                orderItem.setOrderId(resultSet.getLong(index++));
-                orderItem.setQuantity(resultSet.getInt(index++));
-                Product product = new Product();
-                product.setProductId(resultSet.getLong(index++));
-                product.setCode(resultSet.getString(index++));
-                product.setName(resultSet.getString(index++));
-                product.setSize(resultSet.getInt(index++));
-                product.setVariety(resultSet.getString(index++));
-                product.setPrice(resultSet.getBigDecimal(index++));
-                product.setStatus(resultSet.getString(index));
-                orderItem.setProduct(product);
-                orderItems.add(orderItem);
+                OrderLine orderLine = new OrderLine();
+                orderLine.setQuantity(resultSet.getInt(11));
+                orderLine.setProductCode(resultSet.getString(12));
+                orderLine.setProductName(resultSet.getString(13));
+                orderLine.setProductSize(resultSet.getInt(14));
+                orderLine.setProductVariety(resultSet.getString(15));
+                orderLine.setProductPrice(resultSet.getBigDecimal(16));
+                orderLines.add(orderLine);
             }
-            if(order != null) {
-                order.setOrderItems(orderItems);
-                order.setCustomerInfo(customerInfo);
-                order.setSalespersonInfo(salepersonInfo);
-            }
-        } catch (SQLException e) {
+            order.setOrderLines(orderLines);
+        }catch(SQLException e){
             e.printStackTrace();
             throw new RuntimeException(e);
         }
@@ -94,7 +67,7 @@ public class OrderDAO extends DataAccessObject<Order> {
 
     @Override
     public List<Order> findAll() {
-        return List.of();
+        return null;
     }
 
     @Override
@@ -110,5 +83,48 @@ public class OrderDAO extends DataAccessObject<Order> {
     @Override
     public void delete(long id) {
 
+    }
+
+    public List<Order> getOrdersForCustomer(long customerId) {
+        List<Order> orders = new ArrayList<>();
+        try(PreparedStatement statement = this.connection.prepareStatement(GET_FOR_CUST)){
+            statement.setLong(1,customerId);
+            ResultSet resultSet = statement.executeQuery();
+            long orderId = 0;
+            Order order = null;
+            while(resultSet.next()) {
+                long localOrderId = resultSet.getLong(4);
+                if(orderId != localOrderId) {
+                    orderId = localOrderId;
+
+                    order = new Order();
+                    order.setCustomerFirstName(resultSet.getString(1));
+                    order.setCustomerLastName(resultSet.getString(2));
+                    order.setCustomerEmail(resultSet.getString(3));
+                    order.setId(orderId);
+                    order.setCreationDate(new Date(resultSet.getDate(5).getTime()));
+                    order.setTotalDue(resultSet.getBigDecimal(6));
+                    order.setStatus(resultSet.getString(7));
+                    order.setSalespersonFirstName(resultSet.getString(8));
+                    order.setSalespersonLastName(resultSet.getString(9));
+                    order.setSalespersonEmail(resultSet.getString(10));
+                    orders.add(order);
+
+                    order.setOrderLines(new ArrayList<OrderLine>());
+                }
+                OrderLine orderLine = new OrderLine();
+                orderLine.setQuantity(resultSet.getInt(11));
+                orderLine.setProductCode(resultSet.getString(12));
+                orderLine.setProductName(resultSet.getString(13));
+                orderLine.setProductSize(resultSet.getInt(14));
+                orderLine.setProductVariety(resultSet.getString(15));
+                orderLine.setProductPrice(resultSet.getBigDecimal(16));
+                order.getOrderLines().add(orderLine);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return orders;
     }
 }

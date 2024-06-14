@@ -1,6 +1,9 @@
 package com.satish.lil.jdbc.util;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 public abstract class DataAccessObject <T extends DataTransferObject> {

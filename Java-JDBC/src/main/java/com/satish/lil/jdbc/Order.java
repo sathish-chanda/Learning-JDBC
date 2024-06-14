@@ -1,5 +1,6 @@
 package com.satish.lil.jdbc;
 
+
 import com.satish.lil.jdbc.util.DataTransferObject;
 
 import java.math.BigDecimal;
@@ -7,298 +8,122 @@ import java.util.Date;
 import java.util.List;
 
 public class Order implements DataTransferObject {
-    private long orderId;
+    private long id;
+    private String customerFirstName;
+    private String customerLastLane;
+    private String customerEmail;
     private Date creationDate;
     private BigDecimal totalDue;
     private String status;
-    private CustomerInfo customerInfo;
-    private SalepersonInfo salespersonInfo;
-    private List<OrderItem> orderItems;
+    private String salespersonFirstName;
+    private String salespersonLastName;
+    private String salespersonEmail;
+    private List<OrderLine> orderLines;
 
-    public long getOrderId() {
-        return orderId;
+
+    @Override
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getCustomerFirstName() {
+        return customerFirstName;
+    }
+
+    public void setCustomerFirstName(String customerFirstName) {
+        this.customerFirstName = customerFirstName;
+    }
+
+    public String getCustomerLastLane() {
+        return customerLastLane;
+    }
+
+    public void setCustomerLastName(String customerLastLane) {
+        this.customerLastLane = customerLastLane;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
     }
 
     public Date getCreationDate() {
         return creationDate;
     }
 
-    public BigDecimal getTotalDue() {
-        return totalDue;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public CustomerInfo getCustomerInfo() {
-        return customerInfo;
-    }
-
-    public SalepersonInfo getSalespersonInfo() {
-        return salespersonInfo;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void setOrderId(long orderId) {
-        this.orderId = orderId;
-    }
-
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public BigDecimal getTotalDue() {
+        return totalDue;
     }
 
     public void setTotalDue(BigDecimal totalDue) {
         this.totalDue = totalDue;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public void setStatus(String status) {
         this.status = status;
     }
 
-    public void setCustomerInfo(CustomerInfo customerInfo) {
-        this.customerInfo = customerInfo;
+    public String getSalespersonFirstName() {
+        return salespersonFirstName;
     }
 
-    public void setSalespersonInfo(SalepersonInfo salespersonInfo) {
-        this.salespersonInfo = salespersonInfo;
+    public void setSalespersonFirstName(String salespersonFirstName) {
+        this.salespersonFirstName = salespersonFirstName;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public String getSalespersonLastName() {
+        return salespersonLastName;
     }
 
-    @Override
-    public long getId() {
-        return orderId;
+    public void setSalespersonLastName(String salespersonLastName) {
+        this.salespersonLastName = salespersonLastName;
+    }
+
+    public String getSalespersonEmail() {
+        return salespersonEmail;
+    }
+
+    public void setSalespersonEmail(String salespersonEmail) {
+        this.salespersonEmail = salespersonEmail;
+    }
+
+    public List<OrderLine> getOrderLines() {
+        return orderLines;
+    }
+
+    public void setOrderLines(List<OrderLine> orderLines) {
+        this.orderLines = orderLines;
     }
 
     @Override
     public String toString() {
         return "Order{" +
-                "orderId=" + orderId +
+                "id=" + id +
+                ", customerFirstName='" + customerFirstName + '\'' +
+                ", customerLastLane='" + customerLastLane + '\'' +
+                ", customerEmail='" + customerEmail + '\'' +
                 ", creationDate=" + creationDate +
                 ", totalDue=" + totalDue +
                 ", status='" + status + '\'' +
-                ", customerInfo=" + customerInfo +
-                ", salespersonInfo=" + salespersonInfo +
-                ", orderItems=" + orderItems +
-                '}';
-    }
-}
-
-class CustomerInfo {
-    private long customerId;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
-    private String address;
-    private String city;
-    private String state;
-    private String zipcode;
-
-    @Override
-    public String toString() {
-        return "CustomerInfo{" +
-                "customerId=" + customerId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", address='" + address + '\'' +
-                ", city='" + city + '\'' +
-                ", state='" + state + '\'' +
-                ", zipcode='" + zipcode + '\'' +
-                '}';
-    }
-
-    public void setCustomerId(long customerId) {
-        this.customerId = customerId;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public void setZipcode(String zipcode) {
-        this.zipcode = zipcode;
-    }
-
-    public long getCustomerId() {
-        return customerId;
-    }
-}
-class SalepersonInfo {
-    private long salespersonId;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
-    private String address;
-    private String city;
-    private String state;
-    private String zipcode;
-
-    public void setSalespersonId(long salespersonId) {
-        this.salespersonId = salespersonId;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public void setZipcode(String zipcode) {
-        this.zipcode = zipcode;
-    }
-
-    @Override
-    public String toString() {
-        return "SalepersonInfo{" +
-                "salespersonId=" + salespersonId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", address='" + address + '\'' +
-                ", city='" + city + '\'' +
-                ", state='" + state + '\'' +
-                ", zipcode='" + zipcode + '\'' +
-                '}';
-    }
-}
-
-class OrderItem {
-    private long orderItemId;
-    private long orderId;
-    private Product product;
-    private int quantity;
-
-    public void setOrderItemId(long orderItemId) {
-        this.orderItemId = orderItemId;
-    }
-
-    public void setOrderId(long orderId) {
-        this.orderId = orderId;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    @Override
-    public String toString() {
-        return "OrderItem{" +
-                "orderItemId=" + orderItemId +
-                ", orderId=" + orderId +
-                ", productId=" + product +
-                ", quantity=" + quantity +
-                '}';
-    }
-}
-
-class Product {
-    private long productId;
-    private String code;
-    private String name;
-    private int size;
-    private String variety;
-    private BigDecimal price;
-    private String status;
-
-    public void setProductId(long productId) {
-        this.productId = productId;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public void setVariety(String variety) {
-        this.variety = variety;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "productId=" + productId +
-                ", code='" + code + '\'' +
-                ", name='" + name + '\'' +
-                ", size=" + size +
-                ", variety='" + variety + '\'' +
-                ", price=" + price +
-                ", status='" + status + '\'' +
+                ", salespersonFirstName='" + salespersonFirstName + '\'' +
+                ", salespersonLastName='" + salespersonLastName + '\'' +
+                ", salespersonEmail='" + salespersonEmail + '\'' +
+                ", orderLines=" + orderLines +
                 '}';
     }
 }
