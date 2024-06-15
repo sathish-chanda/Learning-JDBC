@@ -10,12 +10,17 @@ public class JDBCExecutor {
         DatabaseConnectionManager dcm = new DatabaseConnectionManager("localhost",
                 "hplussport", "postgres", "password");
         try{
-            Connection connection = dcm.getConnection();
 
-            // Ordering and Limiting
+            Connection connection = dcm.getConnection();
             CustomerDAO customerDAO = new CustomerDAO(connection);
             List<Customer> customers = customerDAO.findAllSorted(20);
             customers.forEach(System.out::println);
+            // Paging
+            System.out.println("Paged");
+            for(int i=1;i<4;i++) {
+                System.out.println("Page Number: "+ i);
+                customerDAO.findAllPaged(10,i).forEach(System.out::println);
+            }
 
         }catch(SQLException e){
             e.printStackTrace();

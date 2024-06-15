@@ -26,6 +26,8 @@ public class CustomerDAO extends DataAccessObject<Customer> {
 
     private static final String GET_ALL_LMT = "SELECT customer_id, first_name, last_name, email, phone, address, city, state, zipcode FROM customer ORDER BY last_name, first_name LIMIT ?";
 
+    private static final String GET_ALL_PAGED = "SELECT customer_id, first_name, last_name, email, phone, address, city, state, zipcode FROM customer ORDER BY last_name, first_name LIMIT ? OFFSET ?";
+
     @Override
     public Customer findById(long id) {
         Customer customer = new Customer();
@@ -112,6 +114,37 @@ public class CustomerDAO extends DataAccessObject<Customer> {
         List<Customer> customers = new ArrayList<>();
         try(PreparedStatement statement = this.connection.prepareStatement(GET_ALL_LMT);){
             statement.setLong(1, limit);
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                Customer customer = new Customer();
+                customer.setId(resultSet.getLong("customer_id"));
+                customer.setFirstName(resultSet.getString("first_name"));
+                customer.setLastName(resultSet.getString("last_name"));
+                customer.setEmail(resultSet.getString("email"));
+                customer.setPhone(resultSet.getString("phone"));
+                customer.setAddress(resultSet.getString("address"));
+                customer.setCity(resultSet.getString("city"));
+                customer.setState(resultSet.getString("state"));
+                customer.setZipCode(resultSet.getString("zipcode"));
+                customers.add(customer);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return customers;
+    }
+
+
+    public List<Customer> findAllPaged(int limit, int pageNumber) {
+        List<Customer> customers = new ArrayList<>();
+        if(limit < 1) {
+            limit = 10;
+        }
+        int offset = (pageNumber - 1) * limit;
+        try(PreparedStatement statement = this.connection.prepareStatement(GET_ALL_PAGED);){
+            statement.setLong(1, limit);
+            statement.setInt(2,offset);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
                 Customer customer = new Customer();
