@@ -13,6 +13,7 @@ public class JDBCExecutor {
 
             Connection connection = dcm.getConnection();
             CustomerDAO customerDAO = new CustomerDAO(connection);
+
             List<Customer> customers = customerDAO.findAllSorted(20);
             customers.forEach(System.out::println);
             // Paging
@@ -21,6 +22,16 @@ public class JDBCExecutor {
                 System.out.println("Page Number: "+ i);
                 customerDAO.findAllPaged(10,i).forEach(System.out::println);
             }
+
+            // Commit and Rollback.
+            Customer michel = customerDAO.findById(10000);
+            System.out.println(michel);
+            michel.setCity("Montreal");
+            michel.setState("Quebec");
+            michel.setZipCode("H3H 3A1");
+            michel.setEmail("michel@gmail.com");
+            michel = customerDAO.update(michel);
+            System.out.println(michel);
 
         }catch(SQLException e){
             e.printStackTrace();
